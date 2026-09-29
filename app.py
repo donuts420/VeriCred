@@ -39,7 +39,7 @@ def verify_file(data: bytes, suffix: str, conf: float):
 
 
 def main():
-    st.title("VeriCred — Academic Certificate Verification")
+    st.title("VeriCred - Academic Certificate Verification")
     st.caption("Prototype: OCR + localized forgery regions + QR/URL evidence. "
                "Nothing here proves authenticity.")
     up = st.file_uploader("Upload certificate", type=["pdf", "png", "jpg", "jpeg"])
