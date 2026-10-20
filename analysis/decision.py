@@ -5,7 +5,7 @@ CLEAR = "No high-confidence tampering detected"
 INCONCLUSIVE = "Inconclusive / analysis unavailable"
 
 
-def decide(det, qr_url, conf=0.5):
+def decide(det, qr_url, conf=0.6):
     reasons = []
     if not det.get("model_loaded"):
         reasons.append("Forgery detector unavailable (no trained weights loaded).")

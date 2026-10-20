@@ -31,7 +31,7 @@ def _annotate(image, boxes):
     return out
 
 
-def predict(image, conf=0.5, weights_path=None):
+def predict(image, conf=0.6, weights_path=None):
     """Run detection. image: PIL Image or path. Returns shared schema dict."""
     if isinstance(image, (str, Path)):
         image = Image.open(image).convert("RGB")

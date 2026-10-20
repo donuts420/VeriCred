@@ -9,7 +9,10 @@ from ocr.extractor import extract_certificate, extract_fields
 from detection.predict import predict
 from qr_validation import analyze as qr_analyze
 from analysis.decision import decide
-from genai.explain import explain
+from genai.explain import ReportGenerationError, explain
+from dotenv import load_dotenv
+
+load_dotenv()
 
 FIELD_LABELS = {"student_name": "Student Name", "degree": "Degree",
                 "institution": "Institution", "year": "Year",
@@ -44,9 +47,13 @@ def main():
                "Nothing here proves authenticity.")
     up = st.file_uploader("Upload certificate", type=["pdf", "png", "jpg", "jpeg"])
     conf = st.slider("Fake-region confidence threshold (tunable, not validated)",
-                     0.05, 0.95, 0.50, 0.05)
+                     0.05, 0.95, 0.60, 0.05)
     if up and st.button("Verify certificate"):
-        res = verify_file(up.getvalue(), Path(up.name).suffix.lower(), conf)
+        try:
+            res = verify_file(up.getvalue(), Path(up.name).suffix.lower(), conf)
+        except ReportGenerationError as exc:
+            st.error(str(exc))
+            return
         st.subheader("Certificate preview")
         st.image(res["image"], use_container_width=True)
 

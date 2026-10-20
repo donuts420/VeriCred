@@ -1,7 +1,6 @@
 # VeriCred ignores: dataset, weights, secrets, caches
 d1Certificate_forgery_detection/
 data/
-dataset/
 weights/*.pt
 weights/*.onnx
 uploads/

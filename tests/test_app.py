@@ -12,6 +12,7 @@ def test_app_imports():
 
 def test_verify_file_end_to_end_no_weights(tmp_path, monkeypatch):
     import app
+    monkeypatch.setattr(app, "explain", lambda evidence: "Gemini report")
     monkeypatch.setenv("VERICRED_WEIGHTS", str(tmp_path / "missing.pt"))
     from detection import predict as P
     P._model, P._model_path = None, None
@@ -27,3 +28,27 @@ def test_verify_file_end_to_end_no_weights(tmp_path, monkeypatch):
     assert res["decision"]["status"].startswith("Inconclusive")
     assert "sha256" not in res and "hash" not in res
     assert res["report"]
+
+
+def test_gemini_error_is_shown_in_streamlit(monkeypatch):
+    from types import SimpleNamespace
+    import app
+    from genai.explain import ReportGenerationError
+
+    messages = []
+    upload = SimpleNamespace(name="cert.pdf", getvalue=lambda: b"pdf")
+    monkeypatch.setattr(app.st, "title", lambda *a: None)
+    monkeypatch.setattr(app.st, "caption", lambda *a: None)
+    monkeypatch.setattr(app.st, "file_uploader", lambda *a, **k: upload)
+    monkeypatch.setattr(app.st, "slider", lambda *a, **k: 0.5)
+    monkeypatch.setattr(app.st, "button", lambda *a, **k: True)
+    monkeypatch.setattr(app.st, "error", messages.append)
+
+    def fail(*args, **kwargs):
+        raise ReportGenerationError("Gemini could not generate a complete report.")
+
+    monkeypatch.setattr(app, "verify_file", fail)
+
+    app.main()
+
+    assert messages == ["Gemini could not generate a complete report."]
