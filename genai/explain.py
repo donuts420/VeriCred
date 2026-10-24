@@ -39,7 +39,8 @@ def explain(evidence):
             + json.dumps(model_evidence, ensure_ascii=False)
         )
         response = OpenAI(api_key=api_key, base_url="https://openrouter.ai/api/v1").chat.completions.create(
-            model=model, messages=[{"role": "user", "content": prompt}], timeout=20)
+            model=model, messages=[{"role": "user", "content": prompt}],
+            max_tokens=512, timeout=20)
     except Exception:
         logger.warning("OpenRouter API request failed")
         raise ReportGenerationError(
